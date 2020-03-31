@@ -1,0 +1,27 @@
+name: Blog_Update
+on: push
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+    name: Publish site map
+    steps:
+      - uses: actions/checkout@v2.0.0
+      - name: Deno
+        uses: denolib/setup-deno@v1.2.0
+      - run: deno --allow-read --allow-write --allow-net --allow-env https://github.com/ame-yu/vue-blog-toolkit/releases/download/latest/map.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: $ {{ github.repository }}
+      - name: Delete
+        uses: ame-yu/action-delete-latest-release@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: latest
+          tag_name: latest
+          body_path: map.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
